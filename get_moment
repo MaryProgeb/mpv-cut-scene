@@ -1,0 +1,19 @@
+#!/bin/bash
+input=$1
+clickTime=$2
+cutLength=10
+secondsBeforeClick=5
+
+projectFolder="${input##*/}_project"
+mkdir -p -- "$projectFolder"
+
+if (( $(bc <<< "$clickTime >= $secondsBeforeClick" ) )); then
+    cutTime=$(bc <<< "$clickTime - $secondsBeforeClick")
+else
+    cutTime=0
+fi
+
+destCuts="$projectFolder/cuts"
+mkdir -p -- "$destCuts"
+output="$destCuts/$clickTime.MTS"
+ffmpeg -ss "$cutTime" -t "$cutLength" -i "$input" -avoid_negative_ts 1 -vcodec copy -acodec copy "$output"
